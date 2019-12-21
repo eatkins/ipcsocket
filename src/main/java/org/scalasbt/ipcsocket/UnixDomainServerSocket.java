@@ -22,9 +22,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketAddress;
 import java.util.concurrent.atomic.AtomicInteger;
-
-import com.sun.jna.LastErrorException;
-import com.sun.jna.ptr.IntByReference;
+import org.scalasbt.ipcsocket.UnixDomainSocketLibrary.SockaddrUn;
 
 /**
  * Implements a {@link ServerSocket} which binds to a local Unix domain socket
@@ -108,7 +106,7 @@ public class UnixDomainServerSocket extends ServerSocket {
       if (path != null) {
         bind(new UnixDomainServerSocketAddress(path));
       }
-    } catch (LastErrorException e) {
+    } catch (NativeErrorException e) {
       throw new IOException(e);
     }
   }
@@ -125,14 +123,12 @@ public class UnixDomainServerSocket extends ServerSocket {
       throw new IllegalStateException("Socket is already closed");
     }
     UnixDomainServerSocketAddress unEndpoint = (UnixDomainServerSocketAddress) endpoint;
-    UnixDomainSocketLibrary.SockaddrUn address =
-        new UnixDomainSocketLibrary.SockaddrUn(unEndpoint.getPath());
     try {
       int socketFd = fd.get();
-      UnixDomainSocketLibrary.bind(socketFd, address, address.size());
+      UnixDomainSocketLibrary.bind(socketFd, unEndpoint.getPath());
       UnixDomainSocketLibrary.listen(socketFd, backlog);
       isBound = true;
-    } catch (LastErrorException e) {
+    } catch (NativeErrorException e) {
       throw new IOException(e);
     }
   }
@@ -150,13 +146,9 @@ public class UnixDomainServerSocket extends ServerSocket {
       }
     }
     try {
-      UnixDomainSocketLibrary.SockaddrUn sockaddrUn =
-          new UnixDomainSocketLibrary.SockaddrUn();
-      IntByReference addressLen = new IntByReference();
-      addressLen.setValue(sockaddrUn.size());
-      int clientFd = UnixDomainSocketLibrary.accept(fd.get(), sockaddrUn, addressLen);
+      int clientFd = UnixDomainSocketLibrary.accept(fd.get(), "");
       return new UnixDomainSocket(clientFd);
-    } catch (LastErrorException e) {
+    } catch (NativeErrorException e) {
       throw new IOException(e);
     }
   }
@@ -169,7 +161,7 @@ public class UnixDomainServerSocket extends ServerSocket {
       // Ensure any pending call to accept() fails.
       UnixDomainSocketLibrary.close(fd.getAndSet(-1));
       isClosed = true;
-    } catch (LastErrorException e) {
+    } catch (NativeErrorException e) {
       throw new IOException(e);
     }
   }

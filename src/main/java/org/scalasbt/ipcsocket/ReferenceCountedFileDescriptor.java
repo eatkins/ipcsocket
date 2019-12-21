@@ -17,8 +17,6 @@
  */
 package org.scalasbt.ipcsocket;
 
-import com.sun.jna.LastErrorException;
-
 import java.io.IOException;
 
 /**
@@ -73,7 +71,7 @@ public class ReferenceCountedFileDescriptor {
     try {
       UnixDomainSocketLibrary.close(fd);
       fd = -1;
-    } catch (LastErrorException e) {
+    } catch (NativeErrorException e) {
       throw new IOException(e);
     }
   }
