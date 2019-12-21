@@ -1,5 +1,6 @@
 package org.scalasbt.ipcsocket;
 
+import com.sun.org.apache.xml.internal.utils.ThreadControllerWrapper;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -21,7 +22,13 @@ public class UnixDomainSocketTest {
     Random rand = new Random();
     Path tempDir = Files.createTempDirectory("ipcsocket");
     Path sock = tempDir.resolve("foo" + rand.nextInt() + ".sock");
-    ServerSocket serverSocket = new UnixDomainServerSocket(sock.toString());
+    ServerSocket serverSocket;
+    try {
+    serverSocket = new UnixDomainServerSocket(sock.toString());
+    } catch (final Throwable t) {
+      t.printStackTrace();
+      throw t;
+      }
 
     CompletableFuture<Boolean> server = CompletableFuture.supplyAsync(() -> {
       try {
