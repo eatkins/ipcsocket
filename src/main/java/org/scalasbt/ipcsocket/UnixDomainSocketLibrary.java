@@ -28,6 +28,8 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * Utility class to bridge native Unix domain socket calls to Java using JNA.
@@ -119,22 +121,70 @@ public class UnixDomainSocketLibrary {
     }
   }
 
-  static {
-    Native.register(Platform.C_LIBRARY_NAME);
-  }
 
-  public static native int socket(int domain, int type, int protocol) throws LastErrorException;
-  public static native int bind(int fd, SockaddrUn address, int addressLen)
-    throws LastErrorException;
-  public static native int listen(int fd, int backlog) throws LastErrorException;
-  public static native int accept(int fd, SockaddrUn address, IntByReference addressLen)
-    throws LastErrorException;
-  public static native int connect(int fd, SockaddrUn address, int addressLen)
-    throws LastErrorException;
-  public static native int read(int fd, ByteBuffer buffer, int count)
-    throws LastErrorException;
-  public static native int write(int fd, ByteBuffer buffer, int count)
-    throws LastErrorException;
-  public static native int close(int fd) throws LastErrorException;
-  public static native int shutdown(int fd, int how) throws LastErrorException;
+  public static int socket(int domain, int type, int protocol) throws LastErrorException {
+    return JNAUnixDomainSocketLibrary.impl().socket(domain, type, protocol);
+  }
+  public static int bind(int fd, SockaddrUn address, int addressLen)
+      throws LastErrorException {
+    return JNAUnixDomainSocketLibrary.impl().bind(fd, address, addressLen);
+  }
+  public static int listen(int fd, int backlog) throws LastErrorException {
+    return JNAUnixDomainSocketLibrary.impl().listen(fd, backlog);
+  }
+  public static int accept(int fd, SockaddrUn address, IntByReference addressLen)
+      throws LastErrorException {
+    return JNAUnixDomainSocketLibrary.impl().accept(fd, address, addressLen);
+  }
+  public static int connect(int fd, SockaddrUn address, int addressLen)
+      throws LastErrorException {
+    return JNAUnixDomainSocketLibrary.impl().connect(fd, address, addressLen);
+  }
+  public static int read(int fd, ByteBuffer buffer, int count)
+      throws LastErrorException {
+    return JNAUnixDomainSocketLibrary.impl().read(fd, buffer.array(), count);
+  }
+  public static int write(int fd, ByteBuffer buffer, int count)
+      throws LastErrorException {
+    return JNAUnixDomainSocketLibrary.impl().write(fd, buffer.array(), count);
+  }
+  public static int close(int fd) throws LastErrorException {
+    return JNAUnixDomainSocketLibrary.impl().close(fd);
+  }
+  public static int shutdown(int fd, int how) throws LastErrorException {
+    return JNAUnixDomainSocketLibrary.impl().shutdown(fd, how);
+  }
+}
+
+class JNAUnixDomainSocketLibrary {
+  private static final AtomicReference<JNAUnixDomainSocketLibrary> impl = new AtomicReference<>();
+  private static final AtomicBoolean registered = new AtomicBoolean(false);
+  public static JNAUnixDomainSocketLibrary impl() {
+    final JNAUnixDomainSocketLibrary previous = impl.get();
+    if (previous != null) return previous;
+    else {
+      synchronized(impl) {
+        final JNAUnixDomainSocketLibrary i = new JNAUnixDomainSocketLibrary();
+        impl.set(i);
+        return i;
+      }
+    }
+  }
+  public JNAUnixDomainSocketLibrary() {
+    if (registered.compareAndSet(false, true)) Native.register(Platform.C_LIBRARY_NAME);
+  }
+  public native int socket(int domain, int type, int protocol) throws LastErrorException;
+  public native int bind(int fd, UnixDomainSocketLibrary.SockaddrUn address, int addressLen)
+      throws LastErrorException;
+  public native int listen(int fd, int backlog) throws LastErrorException;
+  public native int accept(int fd, UnixDomainSocketLibrary.SockaddrUn address, IntByReference addressLen)
+      throws LastErrorException;
+  public native int connect(int fd, UnixDomainSocketLibrary.SockaddrUn address, int addressLen)
+      throws LastErrorException;
+  public native int read(int fd, byte[] buffer, int count)
+      throws LastErrorException;
+  public native int write(int fd, byte[] buffer, int count)
+      throws LastErrorException;
+  public native int close(int fd) throws LastErrorException;
+  public native int shutdown(int fd, int how) throws LastErrorException;
 }
