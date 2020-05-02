@@ -18,6 +18,8 @@ import java.util.Random;
 public class Win32NamedPipeSocketTest {
   @Test
   public void testAssertEquals() throws IOException, InterruptedException {
+    String os = System.getProperty("os.name", "").toLowerCase();
+    if (os.startsWith("mac") || os.startsWith("linux")) return;
     Random rand = new Random();
     String pipeName = "\\\\.\\pipe\\ipcsockettest" + rand.nextInt();
     ServerSocket serverSocket = new Win32NamedPipeServerSocket(pipeName);

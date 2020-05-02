@@ -18,6 +18,7 @@ import java.util.Random;
 public class UnixDomainSocketTest {
   @Test
   public void testAssertEquals() throws IOException, InterruptedException {
+    if (System.getProperty("os.name", "").toLowerCase().startsWith("win")) return;
     Random rand = new Random();
     Path tempDir = Files.createTempDirectory("ipcsocket");
     Path sock = tempDir.resolve("foo" + rand.nextInt() + ".sock");
