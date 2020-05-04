@@ -16,28 +16,33 @@ import java.util.concurrent.CompletableFuture;
 import java.util.Random;
 
 public class UnixDomainSocketTest {
+  boolean useJNI() {
+    return false;
+  }
+
   @Test
   public void testAssertEquals() throws IOException, InterruptedException {
     if (System.getProperty("os.name", "").toLowerCase().startsWith("win")) return;
     Random rand = new Random();
     Path tempDir = Files.createTempDirectory("ipcsocket");
     Path sock = tempDir.resolve("foo" + rand.nextInt() + ".sock");
-    ServerSocket serverSocket = new UnixDomainServerSocket(sock.toString());
+    ServerSocket serverSocket = new UnixDomainServerSocket(sock.toString(), useJNI());
 
-    CompletableFuture<Boolean> server = CompletableFuture.supplyAsync(() -> {
-      try {
-        EchoServer echo = new EchoServer(serverSocket);
-        echo.run();
-      } catch (IOException e) { }
-      return true;
-    });
+    CompletableFuture<Boolean> server =
+        CompletableFuture.supplyAsync(
+            () -> {
+              try {
+                EchoServer echo = new EchoServer(serverSocket);
+                echo.run();
+              } catch (IOException e) {
+              }
+              return true;
+            });
     Thread.sleep(100);
 
-    Socket client = new UnixDomainSocket(sock.toString());
-    PrintWriter out =
-      new PrintWriter(client.getOutputStream(), true);
-    BufferedReader in = new BufferedReader(
-      new InputStreamReader(client.getInputStream()));
+    Socket client = new UnixDomainSocket(sock.toString(), useJNI());
+    PrintWriter out = new PrintWriter(client.getOutputStream(), true);
+    BufferedReader in = new BufferedReader(new InputStreamReader(client.getInputStream()));
     out.println("hello");
     String line = in.readLine();
     client.close();
