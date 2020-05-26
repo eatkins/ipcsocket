@@ -50,18 +50,18 @@ JNIEXPORT jint JNICALL Java_org_scalasbt_ipcsocket_JNIUnixDomainSocketLibraryPro
 /*
  * Class:     org_scalasbt_ipcsocket_JNIUnixDomainSocketLibraryProvider
  * Method:    read
- * Signature: (I[BI)I
+ * Signature: (I[BII)I
  */
 JNIEXPORT jint JNICALL Java_org_scalasbt_ipcsocket_JNIUnixDomainSocketLibraryProvider_read
-  (JNIEnv *, jobject, jint, jbyteArray, jint);
+  (JNIEnv *, jobject, jint, jbyteArray, jint, jint);
 
 /*
  * Class:     org_scalasbt_ipcsocket_JNIUnixDomainSocketLibraryProvider
  * Method:    write
- * Signature: (I[BI)I
+ * Signature: (I[BII)I
  */
 JNIEXPORT jint JNICALL Java_org_scalasbt_ipcsocket_JNIUnixDomainSocketLibraryProvider_write
-  (JNIEnv *, jobject, jint, jbyteArray, jint);
+  (JNIEnv *, jobject, jint, jbyteArray, jint, jint);
 
 /*
  * Class:     org_scalasbt_ipcsocket_JNIUnixDomainSocketLibraryProvider

@@ -29,7 +29,7 @@
     size_t len = strnlen(err, sizeof(err));                                    \
     if (err[len - 2] == '\r')                                                  \
       err[len - 2] = '\0';                                                     \
-    snprintf(buf, sizeof(buf), prefix ? prefix : "%s (error code %d)", err,    \
+    snprintf(buf, sizeof(buf), prefix ? prefix : "%s (error code %ld)", err,    \
              GetLastError());                                                  \
   } while (0);
 
@@ -61,7 +61,7 @@ Java_org_scalasbt_ipcsocket_JNIWin32NamedPipeLibraryProvider_CreateNamedPipeNati
     return handle;
   } else {
     char buf[512];
-    FILL_ERROR("Couldn't create security acl -- %s (error code %d)", buf);
+    FILL_ERROR("Couldn't create security acl -- %s (error code %ld)", buf);
     jclass exClass = (*env)->FindClass(env, "java/io/IOException");
     if (exClass != NULL) {
       return (*env)->ThrowNew(env, exClass, buf);
@@ -120,7 +120,7 @@ Java_org_scalasbt_ipcsocket_JNIWin32NamedPipeLibraryProvider_readNative(
   if (!immediate) {
     if (GetLastError() != ERROR_IO_PENDING) {
       char buf[256];
-      FILL_ERROR("ReadFile() failed: %s (error code %d)", buf);
+      FILL_ERROR("ReadFile() failed: %s (error code %ld)", buf);
       THROW_IO(NULL, buf);
     }
   }
@@ -128,7 +128,7 @@ Java_org_scalasbt_ipcsocket_JNIWin32NamedPipeLibraryProvider_readNative(
   if (!GetOverlappedResult(handle, &olap, &bytes_read, TRUE)) {
     char buf[256];
     FILL_ERROR(
-        "GetOverlappedResult() failed for read operation: %s (error code %d)",
+        "GetOverlappedResult() failed for read operation: %s (error code %ld)",
         buf);
     THROW_IO(NULL, buf);
   }
@@ -165,7 +165,7 @@ Java_org_scalasbt_ipcsocket_JNIWin32NamedPipeLibraryProvider_writeNative(
   if (!immediate) {
     if (GetLastError() != ERROR_IO_PENDING) {
       char buf[256];
-      FILL_ERROR("ReadFile() failed: %s (error code %d)", buf);
+      FILL_ERROR("ReadFile() failed: %s (error code %ld)", buf);
       THROW_IO(NULL, buf);
     }
   }
@@ -173,7 +173,7 @@ Java_org_scalasbt_ipcsocket_JNIWin32NamedPipeLibraryProvider_writeNative(
   if (!GetOverlappedResult(handle, &olap, &bytes_written, TRUE)) {
     char buf[256];
     FILL_ERROR(
-        "GetOverlappedResult() failed for write operation: %s (error code %d)",
+        "GetOverlappedResult() failed for write operation: %s (error code %ld)",
         buf);
     THROW_IO(NULL, buf);
   }

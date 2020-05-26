@@ -32,7 +32,8 @@ public class EchoServer {
                 line = in.readLine();
                 if (line != null) {
                   System.out.println("server: " + line);
-                  out.println(line);
+                  out.print(line + "\n");
+		  out.flush();
                 }
               } while (!line.trim().equals("bye"));
             } catch (IOException e) {

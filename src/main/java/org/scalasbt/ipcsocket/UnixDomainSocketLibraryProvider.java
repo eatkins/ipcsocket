@@ -11,9 +11,9 @@ public interface UnixDomainSocketLibraryProvider {
 
   int connect(int fd, byte[] address, int len) throws NativeErrorException;
 
-  int read(int fd, byte[] buffer, int count) throws NativeErrorException;
+  int read(int fd, byte[] buffer, int offset, int len) throws NativeErrorException;
 
-  int write(int fd, byte[] buffer, int count) throws NativeErrorException;
+  int write(int fd, byte[] buffer, int offset, int len) throws NativeErrorException;
 
   int close(int fd) throws NativeErrorException;
 

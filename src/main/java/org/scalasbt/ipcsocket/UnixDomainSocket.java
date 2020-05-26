@@ -117,13 +117,13 @@ public class UnixDomainSocket extends Socket {
 
   private class UnixDomainSocketInputStream extends InputStream {
     public int read() throws IOException {
-      ByteBuffer buf = ByteBuffer.allocate(1);
+      byte [] buf = new byte[1];
       int result;
-      if (doRead(buf) == 0) {
+      if (doRead(buf, 0, 1) == 0) {
         result = -1;
       } else {
         // Make sure to & with 0xFF to avoid sign extension
-        result = 0xFF & buf.get();
+        result = 0xFF & buf[0];
       }
       return result;
     }
@@ -132,21 +132,20 @@ public class UnixDomainSocket extends Socket {
       if (len == 0) {
         return 0;
       }
-      ByteBuffer buf = ByteBuffer.wrap(b, off, len);
-      int result = doRead(buf);
+      int result = doRead(b, off, len);
       if (result == 0) {
         result = -1;
       }
       return result;
     }
 
-    private int doRead(ByteBuffer buf) throws IOException {
+    private int doRead(byte[] buf, int offset, int len) throws IOException {
       try {
         int fdToRead = fd.acquire();
         if (fdToRead == -1) {
           return -1;
         }
-        return provider.read(fdToRead, buf.array(), buf.remaining());
+        return provider.read(fdToRead, buf, offset, len);
       } catch (NativeErrorException e) {
         throw new IOException(e);
       } finally {
@@ -158,31 +157,28 @@ public class UnixDomainSocket extends Socket {
   private class UnixDomainSocketOutputStream extends OutputStream {
 
     public void write(int b) throws IOException {
-      ByteBuffer buf = ByteBuffer.allocate(1);
-      buf.put(0, (byte) (0xFF & b));
-      doWrite(buf);
+      doWrite(new byte[] { (byte) (0xFF & b) }, 0, 1);
     }
 
     public void write(byte[] b, int off, int len) throws IOException {
       if (len == 0) {
         return;
       }
-      ByteBuffer buf = ByteBuffer.wrap(b, off, len);
-      doWrite(buf);
+      doWrite(b, off, len);
     }
 
-    private void doWrite(ByteBuffer buf) throws IOException {
+    private void doWrite(byte[] b, int off, int len) throws IOException {
       try {
         int fdToWrite = fd.acquire();
         if (fdToWrite == -1) {
           return;
         }
-        int ret = provider.write(fdToWrite, buf.array(), buf.remaining());
-        if (ret != buf.remaining()) {
+        int ret = provider.write(fdToWrite, b, off, len);
+        if (ret != len) {
           // This shouldn't happen with standard blocking Unix domain sockets.
           throw new IOException(
               "Could not write "
-                  + buf.remaining()
+                  + len
                   + " bytes as requested "
                   + "(wrote "
                   + ret

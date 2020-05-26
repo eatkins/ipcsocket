@@ -113,7 +113,7 @@ def nativeLibrarySettings(platform: String): Seq[Setting[_]] = {
       baseDirectory.value.toGlob / "jni" / glob,
     },
     key / skip := isWin || ((ThisBuild / nativePlatform).value match {
-      case `platform` => true
+      case `platform` => false
       case p          => p != "win32"
     }),
     key := Def.taskDyn {

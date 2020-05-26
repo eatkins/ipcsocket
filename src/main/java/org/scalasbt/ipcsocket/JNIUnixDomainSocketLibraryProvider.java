@@ -18,9 +18,9 @@ class JNIUnixDomainSocketLibraryProvider implements UnixDomainSocketLibraryProvi
 
   public native int connect(int fd, byte[] address, int len) throws NativeErrorException;
 
-  public native int read(int fd, byte[] buffer, int count) throws NativeErrorException;
+  public native int read(int fd, byte[] buffer, int offset, int len) throws NativeErrorException;
 
-  public native int write(int fd, byte[] buffer, int count) throws NativeErrorException;
+  public native int write(int fd, byte[] buffer, int offset, int len) throws NativeErrorException;
 
   public native int close(int fd) throws NativeErrorException;
 

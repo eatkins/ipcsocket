@@ -219,18 +219,18 @@ class JNAUnixDomainSocketLibraryProvider implements UnixDomainSocketLibraryProvi
   }
 
   @Override
-  public int read(int fd, byte[] buffer, int count) throws NativeErrorException {
+  public int read(int fd, byte[] buffer, int offset, int len) throws NativeErrorException {
     try {
-      return UnixDomainSocketLibrary.read(fd, ByteBuffer.wrap(buffer), count);
+      return UnixDomainSocketLibrary.read(fd, ByteBuffer.wrap(buffer, offset, len), len);
     } catch (final LastErrorException e) {
       throw new NativeErrorException(e.getErrorCode(), e.getMessage());
     }
   }
 
   @Override
-  public int write(int fd, byte[] buffer, int count) throws NativeErrorException {
+  public int write(int fd, byte[] buffer, int offset, int len) throws NativeErrorException {
     try {
-      return UnixDomainSocketLibrary.write(fd, ByteBuffer.wrap(buffer), count);
+      return UnixDomainSocketLibrary.write(fd, ByteBuffer.wrap(buffer, offset, len), len);
     } catch (final LastErrorException e) {
       throw new NativeErrorException(e.getErrorCode(), e.getMessage());
     }
