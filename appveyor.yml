@@ -29,6 +29,8 @@ for:
 
   cache:
     - /Users/appveyor/.jabba/jdk
+  test_script:
+    - sbt "test"
 
 -
   matrix:
@@ -56,6 +58,8 @@ for:
   cache:
     - /home/appveyor/.jabba/jdk
     - /home/appveyor/.sbt
+  test_script:
+    - sbt "test"
 
 
 -
@@ -63,9 +67,8 @@ for:
     only:
       - image: Visual Studio 2019
   install:
-    - cinst jdk8 -params 'installdir=C:\\jdk8'
-    - SET JAVA_HOME=C:\jdk8
-    - SET PATH=C:\jdk8\bin;%PATH%
+    - SET JAVA_HOME='C:\Program Files (x86)\Java\jdk1.8.0'
+    - SET PATH='C:\Program Files (x86)\Java\jdk1.8.0\bin;%PATH%'
 
     - ps: |
         Add-Type -AssemblyName System.IO.Compression.FileSystem
@@ -78,8 +81,12 @@ for:
         }
     - SET PATH=C:\sbt\sbt\bin;%PATH%
     - SET SBT_OPTS=-XX:MaxPermSize=1g -Xmx1g -Dfile.encoding=UTF8
+    - SET APPVEYOR_SAVE_CACHE_ON_ERROR=true
   cache:
-    - '%USERPROFILE%/.sbt'
+    - '%USERPROFILE%\.ivy2\cache'
+    - '%LOCALAPPDATA%\Coursier\Cache\v1'
+    - '%USERPROFILE%\.sbt'
+    - 'C:\sbt'
 
 test_script:
   - sbt "test"
