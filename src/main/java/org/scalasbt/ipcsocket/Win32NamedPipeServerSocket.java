@@ -56,6 +56,7 @@ public class Win32NamedPipeServerSocket extends ServerSocket {
    * requireStrictLength, Win32NamedPipeSocketInputStream can require that len matches up exactly
    * the number of bytes to read.
    */
+  @Deprecated
   public Win32NamedPipeServerSocket(String path, boolean requireStrictLength) throws IOException {
     this(Win32NamedPipeLibrary.PIPE_UNLIMITED_INSTANCES, path, requireStrictLength);
   }

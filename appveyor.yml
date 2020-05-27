@@ -1,9 +1,9 @@
 build: off
 
 image:
+  - Visual Studio 2019
   - Ubuntu
   - macOS
-  - Visual Studio 2019
 
 init:
   - git config --global core.autocrlf input

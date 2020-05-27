@@ -122,7 +122,8 @@ return -1
  */
 jint JNICALL
 Java_org_scalasbt_ipcsocket_JNIUnixDomainSocketLibraryProvider_read(
-    JNIEnv *env, UNUSED jclass clazz, jint fd, jbyteArray buffer, jint offset, jint len) {
+    JNIEnv *env, UNUSED jclass clazz, jint fd, jbyteArray buffer, jint offset,
+    jint len) {
   errno = 0;
   jbyte *bytes = malloc(len);
   int bytes_read = read(fd, bytes, len);
@@ -141,7 +142,8 @@ return -1
  */
 jint JNICALL
 Java_org_scalasbt_ipcsocket_JNIUnixDomainSocketLibraryProvider_write(
-    JNIEnv *env, UNUSED jclass clazz, jint fd, jbyteArray buffer, jint offset, jint len) {
+    JNIEnv *env, UNUSED jclass clazz, jint fd, jbyteArray buffer, jint offset,
+    jint len) {
   errno = 0;
   jbyte *bytes = (*env)->GetByteArrayElements(env, buffer, 0);
   int bytes_written = write(fd, bytes + offset, len);

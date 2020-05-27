@@ -1,6 +1,6 @@
 package org.scalasbt.ipcsocket;
 
-public class UnixDomainSocketTestJNI extends UnixDomainSocketTest {
+public class SocketTestJNI extends SocketTest {
   @Override
   boolean useJNI() {
     return true;

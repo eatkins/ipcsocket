@@ -80,7 +80,7 @@ class NativeLoader {
           if (!pid.isEmpty()) {
             final Path pidFile = Paths.get(output.toString() + ".pid");
             Files.write(pidFile, pid.getBytes());
-	    pidFile.toFile().deleteOnExit();
+            pidFile.toFile().deleteOnExit();
           }
           try {
             System.load(output.toString());
@@ -99,20 +99,18 @@ class NativeLoader {
   }
 
   /**
-   * This cleans up the temporary shared libraries that are created by NativeLoader.
-   * The deleteOnExit calls don't work on windows because the classloader has open
-   * handles to the shared libraries. If the process abruptly exits on posix systems,
-   * the deleteOnExit calls also aren't run so it is necessary to manually clean up
-   * these files to avoid leaking disk space. This is done on a background thread to
-   * avoid blocking the application. On windows, we can just try and delete the file
-   * and if there is an open handle to the file, the delete will fail, which is what
-   * we want. On posix systems, we add a pid file and check if there is a process with
-   * that pid running so that we don't accidentally delete an active library from a
-   * running process. In some cases, there might be a pid collision that prevents a
-   * deletion that could actually be safely performed but this is fairly unlikely and,
-   * even if it does happen, is unlikely to lead to an accumulation of temp files
-   * because there is unlikely to be another pid collision the next time the collector
-   * runs (except in pathological cases).
+   * This cleans up the temporary shared libraries that are created by NativeLoader. The
+   * deleteOnExit calls don't work on windows because the classloader has open handles to the shared
+   * libraries. If the process abruptly exits on posix systems, the deleteOnExit calls also aren't
+   * run so it is necessary to manually clean up these files to avoid leaking disk space. This is
+   * done on a background thread to avoid blocking the application. On windows, we can just try and
+   * delete the file and if there is an open handle to the file, the delete will fail, which is what
+   * we want. On posix systems, we add a pid file and check if there is a process with that pid
+   * running so that we don't accidentally delete an active library from a running process. In some
+   * cases, there might be a pid collision that prevents a deletion that could actually be safely
+   * performed but this is fairly unlikely and, even if it does happen, is unlikely to lead to an
+   * accumulation of temp files because there is unlikely to be another pid collision the next time
+   * the collector runs (except in pathological cases).
    */
   private static class CleanupRunnable implements Runnable {
     @Override

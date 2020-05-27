@@ -117,7 +117,7 @@ public class UnixDomainSocket extends Socket {
 
   private class UnixDomainSocketInputStream extends InputStream {
     public int read() throws IOException {
-      byte [] buf = new byte[1];
+      byte[] buf = new byte[1];
       int result;
       if (doRead(buf, 0, 1) == 0) {
         result = -1;
@@ -157,7 +157,7 @@ public class UnixDomainSocket extends Socket {
   private class UnixDomainSocketOutputStream extends OutputStream {
 
     public void write(int b) throws IOException {
-      doWrite(new byte[] { (byte) (0xFF & b) }, 0, 1);
+      doWrite(new byte[] {(byte) (0xFF & b)}, 0, 1);
     }
 
     public void write(byte[] b, int off, int len) throws IOException {

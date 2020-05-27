@@ -29,7 +29,7 @@
     size_t len = strnlen(err, sizeof(err));                                    \
     if (err[len - 2] == '\r')                                                  \
       err[len - 2] = '\0';                                                     \
-    snprintf(buf, sizeof(buf), prefix ? prefix : "%s (error code %ld)", err,    \
+    snprintf(buf, sizeof(buf), prefix ? prefix : "%s (error code %ld)", err,   \
              GetLastError());                                                  \
   } while (0);
 
