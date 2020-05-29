@@ -39,12 +39,14 @@ public class UnixDomainSocket extends Socket {
   private final ReferenceCountedFileDescriptor fd;
   private final InputStream is;
   private final OutputStream os;
+  private final String path;
   private static final int SHUT_RD = 0;
   private static final int SHUT_WR = 1;
 
   /** Creates a Unix domain socket backed by a file path. */
   public UnixDomainSocket(String path, boolean useJNI) throws IOException {
     try {
+      this.path = path;
       provider = UnixDomainSocketLibraryProvider.get(useJNI);
       AtomicInteger fd =
           new AtomicInteger(
@@ -67,6 +69,7 @@ public class UnixDomainSocket extends Socket {
   /** Creates a Unix domain socket backed by a native file descriptor. */
   public UnixDomainSocket(int fd, boolean useJNI) {
     provider = UnixDomainSocketLibraryProvider.get(useJNI);
+    this.path = null;
     this.fd = new ReferenceCountedFileDescriptor(fd, provider);
     this.is = new UnixDomainSocketInputStream();
     this.os = new UnixDomainSocketOutputStream();
@@ -134,6 +137,12 @@ public class UnixDomainSocket extends Socket {
       }
       int result = doRead(b, off, len);
       if (result == 0) {
+        try {
+          provider.close(fd.acquire());
+        } catch (final NativeErrorException e) {
+          throw new IOException(
+              "Error closing " + fd.acquire() + (path == null ? "" : " for " + path));
+        }
         result = -1;
       }
       return result;
