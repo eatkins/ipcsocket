@@ -221,6 +221,14 @@ class JNAUnixDomainSocketLibraryProvider implements UnixDomainSocketLibraryProvi
   @Override
   public int read(int fd, byte[] buffer, int offset, int len) throws NativeErrorException {
     try {
+      if (offset > buffer.length - 1) {
+	String message = "offset: " + offset + " greater than buffer size " + buffer.length;
+	throw new IllegalArgumentException(message);
+      }
+      if (offset + len > buffer.length) {
+	String message = "Tried to read more bytes " + len + " than available from position " + offset + " in buffer of size " + buffer.length;
+	throw new IllegalArgumentException(message);
+      }
       return UnixDomainSocketLibrary.read(fd, ByteBuffer.wrap(buffer, offset, len), len);
     } catch (final LastErrorException e) {
       throw new NativeErrorException(e.getErrorCode(), e.getMessage());
