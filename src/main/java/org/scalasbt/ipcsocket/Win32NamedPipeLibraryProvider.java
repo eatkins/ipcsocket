@@ -11,7 +11,8 @@ interface Win32NamedPipeLibraryProvider {
       int nOutBufferSize,
       int nInBufferSize,
       int nDefaultTimeOut,
-      int lpSecurityAttributes)
+      int lpSecurityAttributes,
+      int logonDacl)
       throws IOException;
 
   Handle CreateFile(String pipeName) throws IOException;
@@ -68,6 +69,13 @@ interface Win32NamedPipeLibraryProvider {
   int GENERIC_WRITE();
 
   int PIPE_ACCESS_DUPLEX();
+
+  /*
+   * Order security levels in increasing strictness.
+   */
+  static int NO_SECURITY = 0;
+  static int OWNER_DACL = 1;
+  static int LOGON_DACL = 2;
 
   static Win32NamedPipeLibraryProvider get(boolean useJNI) {
     return useJNI
